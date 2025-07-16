@@ -32,4 +32,12 @@ app.use(createPinia())
 app.use(router)
 app.use(Toast, toastOptions)
 
+// Configuração global para o HeadlessUI
+app.config.globalProperties.$headlessui = {
+  dialog: {
+    defaultOpen: false,
+    defaultInitialFocus: undefined
+  }
+}
+
 app.mount('#app') 

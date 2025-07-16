@@ -2,17 +2,70 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Simple modern CSS reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* Estilos globais para o HeadlessUI */
+.headlessui-portal-root {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 9999;
+}
+
+/* Estilos para o backdrop do modal */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+}
+
+/* Estilos para o conteúdo do modal */
+.modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Estilos para as transições do HeadlessUI */
+.headlessui-enter-active {
+  transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+.headlessui-leave-active {
+  transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+.headlessui-enter-from,
+.headlessui-leave-to {
+  opacity: 0;
+}
+
+.headlessui-enter-to,
+.headlessui-leave-from {
+  opacity: 1;
+}
+
+:root {
+  color-scheme: dark;
 }
 
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  line-height: 1.5;
+  @apply bg-gray-900 text-white;
+  margin: 0;
+  min-height: 100vh;
 }
 
 #app {

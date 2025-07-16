@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import type { RouteLocationNormalized } from 'vue-router'
 import { useAuthStore } from '@/modules/auth/stores/useAuthStore'
+import { useLoadingStore } from '@/shared/stores/useLoadingStore'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -46,6 +47,8 @@ const router = createRouter({
 
 router.beforeEach((to: RouteLocationNormalized) => {
   const auth = useAuthStore()
+  const loadingStore = useLoadingStore()
+  loadingStore.startLoading()
 
   // Se a rota requer autenticação e o usuário não está autenticado
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
@@ -59,6 +62,11 @@ router.beforeEach((to: RouteLocationNormalized) => {
   if (to.meta.guest && auth.isAuthenticated) {
     return { name: 'home' }
   }
+})
+
+router.afterEach(() => {
+  const loadingStore = useLoadingStore()
+  loadingStore.stopLoading()
 })
 
 export default router 

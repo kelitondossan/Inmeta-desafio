@@ -1,13 +1,15 @@
 <template>
-  <div :class="{ 'dark': isDark }">
-    <router-view />
-  </div>
+  <LoadingOverlay :show="loadingStore.isLoading" />
+  <router-view v-slot="{ Component }">
+    <component :is="Component" />
+  </router-view>
 </template>
 
 <script setup lang="ts">
-import { useTheme } from '@/composables/useTheme'
+import LoadingOverlay from '@/shared/components/LoadingOverlay.vue'
+import { useLoadingStore } from '@/shared/stores/useLoadingStore'
 
-const { isDark } = useTheme()
+const loadingStore = useLoadingStore()
 </script>
 
 <style>
