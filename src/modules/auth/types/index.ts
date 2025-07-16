@@ -4,6 +4,8 @@ export interface Card {
   description: string
   imageUrl: string
   createdAt: string
+  type?: string
+  rarity?: string
 }
 
 export interface User {

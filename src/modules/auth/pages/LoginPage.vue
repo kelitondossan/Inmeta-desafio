@@ -2,9 +2,7 @@
   <div class="min-h-screen relative overflow-hidden">
     <!-- Background Animation -->
     <div class="absolute inset-0 bg-gradient-to-br from-indigo-100 to-white dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
-      <div class="yugioh-cards">
-        <div v-for="n in 5" :key="n" class="card" :style="{ animationDelay: `${n * 0.5}s` }"></div>
-      </div>
+      <YugiohCardsBackground />
     </div>
 
     <!-- Content -->
@@ -144,6 +142,7 @@ import type { POSITION } from 'vue-toastification'
 import { useAuthStore } from '@/modules/auth/stores/useAuthStore'
 import BaseInput from '@/shared/components/BaseInput.vue'
 import BaseButton from '@/shared/components/BaseButton.vue'
+import YugiohCardsBackground from '@/shared/components/YugiohCardsBackground.vue'
 import { object, string } from 'yup'
 import { useForm, useField } from 'vee-validate'
 

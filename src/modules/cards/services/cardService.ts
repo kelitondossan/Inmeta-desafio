@@ -30,4 +30,8 @@ export const getUserCards = async (): Promise<Card[]> => {
 
 export const addUserCards = async (cardIds: string[]): Promise<void> => {
   await http.post('/me/cards', { cardIds })
+}
+
+export const deleteUserCard = async (cardId: string): Promise<void> => {
+  await http.delete(`/me/cards/${cardId}`)
 } 

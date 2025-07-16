@@ -87,6 +87,19 @@ export const useCardStore = defineStore('cards', {
       } finally {
         this.loading = false
       }
+    },
+
+    async deleteCard(cardId: string) {
+      try {
+        this.loading = true
+        await cardService.deleteUserCard(cardId)
+        this.userCards = this.userCards.filter(card => card.id !== cardId)
+      } catch (error) {
+        console.error('Failed to delete card:', error)
+        throw error
+      } finally {
+        this.loading = false
+      }
     }
   }
 }) 

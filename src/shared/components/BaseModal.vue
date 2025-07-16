@@ -1,75 +1,110 @@
 <template>
-  <Teleport to="body">
-    <Transition
-      enter-active-class="ease-out duration-300"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      leave-active-class="ease-in duration-200"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
+  <TransitionRoot appear :show="modelValue">
+    <Dialog 
+      as="div" 
+      @close="$emit('update:model-value', false)" 
+      class="relative z-50"
     >
-      <div v-if="modelValue" class="fixed inset-0 bg-gray-500 dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-75 transition-opacity" />
-    </Transition>
-
-    <Transition
-      enter-active-class="ease-out duration-300"
-      enter-from-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-      enter-to-class="opacity-100 translate-y-0 sm:scale-100"
-      leave-active-class="ease-in duration-200"
-      leave-from-class="opacity-100 translate-y-0 sm:scale-100"
-      leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-    >
-      <div
-        v-if="modelValue"
-        class="fixed inset-0 z-10 overflow-y-auto"
-        @click="$emit('update:modelValue', false)"
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
       >
-        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <div
-            class="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
-            @click.stop
-          >
-            <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
-              <button
-                type="button"
-                class="rounded-md bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 focus:outline-none"
-                @click="$emit('update:modelValue', false)"
-              >
-                <span class="sr-only">Fechar</span>
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
+        <div class="fixed inset-0 bg-black/75 backdrop-blur-sm" aria-hidden="true" />
+      </TransitionChild>
 
-            <div class="sm:flex sm:items-start">
-              <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
-                <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
-                  {{ title }}
-                </h3>
-                <div class="mt-2">
-                  <slot />
-                </div>
+      <div class="fixed inset-0 overflow-y-auto">
+        <div class="flex min-h-full items-center justify-center p-4 text-center">
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel 
+              class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white/10 backdrop-blur-xl p-6 text-left align-middle shadow-xl transition-all"
+              role="dialog"
+              aria-modal="true"
+              :aria-labelledby="title ? 'modal-title' : undefined"
+            >
+              <DialogTitle 
+                as="h3" 
+                class="text-lg font-medium leading-6 text-white flex justify-between items-center"
+                id="modal-title"
+              >
+                {{ title }}
+                <button
+                  @click="$emit('update:model-value', false)"
+                  class="text-gray-400 hover:text-white transition-colors rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  aria-label="Fechar modal"
+                >
+                  <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </DialogTitle>
+
+              <div class="mt-4">
+                <slot />
               </div>
-            </div>
-          </div>
+            </DialogPanel>
+          </TransitionChild>
         </div>
       </div>
-    </Transition>
-  </Teleport>
+    </Dialog>
+  </TransitionRoot>
 </template>
 
 <script setup lang="ts">
-import { useTheme } from '@/composables/useTheme'
+import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
+import { onMounted, onUnmounted, watch } from 'vue'
 
-const { isDark } = useTheme()
-
-defineProps<{
+const props = defineProps<{
   modelValue: boolean
-  title: string
+  title?: string
 }>()
 
-defineEmits<{
-  'update:modelValue': [value: boolean]
+const emit = defineEmits<{
+  'update:model-value': [value: boolean]
 }>()
-</script> 
+
+// Previne o scroll do body quando o modal está aberto
+onMounted(() => {
+  if (props.modelValue) {
+    document.body.style.overflow = 'hidden'
+  }
+})
+
+onUnmounted(() => {
+  document.body.style.overflow = ''
+})
+
+// Atualiza o scroll do body quando o modelValue muda
+watch(() => props.modelValue, (newValue) => {
+  document.body.style.overflow = newValue ? 'hidden' : ''
+})
+</script>
+
+<style>
+.backdrop-blur-xl {
+  backdrop-filter: blur(20px);
+}
+
+/* Estilos para as transições do modal */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+</style> 

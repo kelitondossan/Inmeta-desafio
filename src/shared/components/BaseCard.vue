@@ -23,4 +23,4 @@ interface Props {
   imageUrl: string
 }
 
-defineProps<Props>()</script> 
+defineProps<Props>();</script> 
