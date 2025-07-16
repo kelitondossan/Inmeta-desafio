@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { login as apiLogin, register as apiRegister, me as apiMe } from '@/modules/auth/services/authService'
 import type { User } from '@/modules/auth/types'
+import { useCardStore } from '@/modules/cards/stores/useCardStore'
+import { useTradeStore } from '@/modules/trades/stores/useTradeStore'
 
 interface AuthState {
   user: User | null
@@ -63,10 +65,23 @@ export const useAuthStore = defineStore('auth', {
     },
 
     logout() {
+      // Limpa os dados do usuário
       this.token = ''
       this.user = null
       this.error = null
+
+      // Limpa o token do localStorage
       localStorage.removeItem('token')
+
+      // Limpa outros dados do localStorage que possam existir
+      localStorage.clear()
+
+      // Reseta os stores
+      const cardStore = useCardStore()
+      const tradeStore = useTradeStore()
+      
+      cardStore.$reset()
+      tradeStore.$reset()
     }
   }
 }) 
