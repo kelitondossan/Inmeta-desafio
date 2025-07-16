@@ -6,7 +6,18 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'home',
-    component: () => import('@/modules/trades/pages/TradesPage.vue')
+    component: () => import('@/modules/trades/pages/MarketplacePage.vue'),
+    meta: { showLoginPrompt: true } // Permite que visitantes vejam as cartas, mas mostra prompt de login para interagir
+  },
+  {
+    path: '/marketplace',
+    redirect: '/'
+  },
+  {
+    path: '/trades',
+    name: 'trades',
+    component: () => import('@/modules/trades/pages/TradesPage.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/login',
@@ -36,12 +47,17 @@ const router = createRouter({
 router.beforeEach((to: RouteLocationNormalized) => {
   const auth = useAuthStore()
 
+  // Se a rota requer autenticação e o usuário não está autenticado
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
-    return { name: 'login' }
+    return { 
+      name: 'login',
+      query: { redirect: to.fullPath }
+    }
   }
 
+  // Se a rota é para visitantes (login/register) e o usuário está autenticado
   if (to.meta.guest && auth.isAuthenticated) {
-    return { name: 'dashboard' }
+    return { name: 'home' }
   }
 })
 

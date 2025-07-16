@@ -18,16 +18,33 @@ interface LoginResponse {
 }
 
 export const login = async (payload: LoginPayload): Promise<LoginResponse> => {
-  const { data } = await http.post<LoginResponse>('/login', payload)
-  return data
+  try {
+    const { data } = await http.post<LoginResponse>('/login', payload)
+    return data
+  } catch (error) {
+    console.error('Login request failed:', error)
+    throw error
+  }
 }
 
 export const register = async (payload: RegisterPayload): Promise<{ userId: string }> => {
-  const { data } = await http.post('/register', payload)
-  return data
+  try {
+    console.log('Sending registration request with payload:', payload)
+    const { data } = await http.post<{ userId: string }>('/register', payload)
+    console.log('Registration successful:', data)
+    return data
+  } catch (error) {
+    console.error('Registration request failed:', error)
+    throw error
+  }
 }
 
 export const me = async (): Promise<User> => {
-  const { data } = await http.get<User>('/me')
-  return data
+  try {
+    const { data } = await http.get<User>('/me')
+    return data
+  } catch (error) {
+    console.error('Fetch user data failed:', error)
+    throw error
+  }
 } 

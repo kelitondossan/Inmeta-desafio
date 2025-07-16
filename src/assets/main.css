@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Simple modern CSS reset */
 * {
   margin: 0;
