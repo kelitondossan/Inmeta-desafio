@@ -6,7 +6,6 @@
 
     <!-- Content -->
     <div class="relative z-10 min-h-screen">
-      <!-- Header com efeito de vidro -->
       <header class="sticky top-0 z-30 bg-gray-900/50 backdrop-blur-xl border-b border-white/10">
         <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between items-center">
@@ -17,27 +16,7 @@
               <p class="mt-1 text-sm text-gray-400">Encontre e troque suas cartas favoritas</p>
             </div>
             <div class="flex items-center space-x-4">
-              <button
-                @click="toggleTheme"
-                class="p-2 rounded-lg hover:bg-white/10 transition-colors"
-              >
-                <svg
-                  v-if="isDark"
-                  class="w-5 h-5 text-yellow-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" />
-                </svg>
-                <svg
-                  v-else
-                  class="w-5 h-5 text-gray-300"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-                </svg>
-              </button>
+             
               <template v-if="authStore.isAuthenticated">
                 <router-link
                   to="/dashboard"
@@ -76,56 +55,52 @@
 
       <main class="py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <!-- Cards Grid -->
-          <div v-if="availableCards.length > 0" class="space-y-6">
+          <!-- Cards Grid with Virtualization -->
+          <div 
+            v-if="availableCards.length > 0" 
+            ref="parentRef"
+            class="h-[calc(100vh-200px)] overflow-auto hide-scrollbar"
+          >
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               <div
                 v-for="(card, index) in availableCards"
                 :key="card.id"
                 class="group relative bg-gray-900/30 backdrop-blur-sm rounded-xl overflow-hidden hover:bg-gray-800/40 transition-all duration-300 transform hover:scale-105 border border-white/10"
-                :style="{ animationDelay: `${index * 100}ms` }"
                 @click="showCardDetails(card)"
               >
                 <div class="relative aspect-[3/4] overflow-hidden">
                   <img 
                     :src="card.imageUrl" 
-                    :alt="card.name" 
-                    class="w-full h-full object-contain" 
+                    :alt="card.name"
+                    class="w-full h-full object-contain"
+                    loading="lazy"
                   />
                   <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                     <p class="text-white text-sm line-clamp-3">{{ card.description }}</p>
                   </div>
                 </div>
                 <div class="p-4">
-                  <h3 class="text-lg font-medium text-white group-hover:text-indigo-400 transition-colors">{{ card.name }}</h3>
+                  <h3 class="text-lg font-medium text-white group-hover:text-indigo-400 transition-colors">
+                    {{ card.name }}
+                  </h3>
                 </div>
               </div>
             </div>
 
-            <!-- Load More -->
-            <div v-if="cardStore.hasMore" class="mt-8 flex justify-center">
-              <BaseButton
-                variant="secondary"
-                :loading="cardStore.loadingMore"
-                :disabled="loadingStore.isLoading"
-                @click="loadMore"
-                class="group relative transform transition-all duration-300 hover:scale-105 bg-gray-900/50 hover:bg-gray-800/60 text-white border border-white/10 backdrop-blur-sm"
-              >
-                <span :class="{ 'opacity-0': cardStore.loadingMore }">
-                  Carregar Mais
-                </span>
-                <div
-                  v-if="cardStore.loadingMore"
-                  class="absolute inset-0 flex items-center justify-center"
-                >
-                  <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-500"></div>
-                </div>
-              </BaseButton>
+            <!-- Infinite Scroll Trigger -->
+            <div 
+              ref="loadMoreTrigger"
+              class="h-10 w-full"
+              v-if="cardStore.hasMore"
+            >
+              <div v-if="cardStore.loadingMore" class="flex justify-center py-4">
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-500"></div>
+              </div>
             </div>
           </div>
 
           <!-- Empty State -->
-          <div v-else-if="!loadingStore.isLoading && availableCards.length === 0" class="text-center py-8">
+          <div v-else-if="!cardStore.loading && availableCards.length === 0" class="text-center py-8">
             <div class="bg-gray-900/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 max-w-lg mx-auto">
               <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -139,6 +114,11 @@
                 Atualizar lista
               </BaseButton>
             </div>
+          </div>
+
+          <!-- Initial Loading State -->
+          <div v-else-if="cardStore.loading && !cardStore.loadingMore" class="flex justify-center items-center min-h-[400px]">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
           </div>
         </div>
       </main>
@@ -285,7 +265,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, shallowRef, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import type { POSITION } from 'vue-toastification'
@@ -294,6 +274,8 @@ import { useCardStore } from '@/modules/cards/stores/useCardStore'
 import { useTradeStore } from '@/modules/trades/stores/useTradeStore'
 import { useLoadingStore } from '@/shared/stores/useLoadingStore'
 import { useTheme } from '@/composables/useTheme'
+import { useVirtualizer } from '@tanstack/vue-virtual'
+import { useIntersectionObserver } from '@vueuse/core'
 import BaseButton from '@/shared/components/BaseButton.vue'
 import BaseModal from '@/shared/components/BaseModal.vue'
 import CardDetailsModal from '@/modules/cards/components/CardDetailsModal.vue'
@@ -309,24 +291,13 @@ const tradeStore = useTradeStore()
 const loadingStore = useLoadingStore()
 const { isDark, toggleTheme } = useTheme()
 
+// Usando shallowRef para objetos grandes
 const showTradeModal = ref(false)
 const showLoginPrompt = ref(false)
 const showDetailsModal = ref(false)
-const selectedCard = ref<Card | null>(null)
-const selectedUserCard = ref<Card | null>(null)
+const selectedCard = shallowRef<Card | null>(null)
+const selectedUserCard = shallowRef<Card | null>(null)
 const proposingTrade = ref(false)
-
-const availableCards = computed(() => cardStore.cards)
-const userCards = computed(() => cardStore.userCards)
-
-const userOwnsSelectedCard = computed(() => {
-  if (!selectedCard.value) return false
-  return cardStore.userCards.some(card => card.id === selectedCard.value?.id)
-})
-
-const canProposeTrade = computed(() => {
-  return selectedCard.value && selectedUserCard.value
-})
 
 const loadUserData = async () => {
   if (authStore.isAuthenticated) {
@@ -364,17 +335,72 @@ watch(() => authStore.isAuthenticated, (isAuthenticated) => {
   }
 })
 
+// Computed properties
+const availableCards = computed(() => cardStore.cards)
+const userCards = computed(() => cardStore.userCards)
+
+const userOwnsSelectedCard = computed(() => {
+  if (!selectedCard.value) return false
+  return cardStore.userCards.some(card => card.id === selectedCard.value?.id)
+})
+
+const canProposeTrade = computed(() => {
+  return selectedCard.value && selectedUserCard.value
+})
+
+// Referência para o container de virtualização
+const parentRef = ref<HTMLElement | null>(null)
+const rowVirtualizer = useVirtualizer({
+  count: computed(() => cardStore.cards.length).value,
+  getScrollElement: () => parentRef.value,
+  estimateSize: () => 300,
+  overscan: 5,
+  getItemKey: (index: number) => cardStore.cards[index]?.id || index.toString()
+})
+
+// Intersection Observer para carregar mais cards
+const loadMoreTrigger = ref<HTMLElement | null>(null)
+const { stop: stopObserver } = useIntersectionObserver(
+  loadMoreTrigger,
+  ([{ isIntersecting }]) => {
+    if (isIntersecting && !loadingStore.isLoading && cardStore.hasMore) {
+      loadMore()
+    }
+  },
+  { threshold: 0.5 }
+)
+
+// Debounce para o carregamento de mais cards
+let loadMoreTimeout: NodeJS.Timeout | null = null
 const loadMore = async () => {
-  if (loadingStore.isLoading) return
+  if (loadingStore.isLoading || !cardStore.hasMore) return
   
-  try {
-    loadingStore.startLoading()
-    await cardStore.fetchCards(cardStore.currentPage + 1)
-  } catch (error) {
-    console.error('Failed to load more cards:', error)
-  } finally {
-    loadingStore.stopLoading()
+  if (loadMoreTimeout) {
+    clearTimeout(loadMoreTimeout)
   }
+  
+  loadMoreTimeout = setTimeout(async () => {
+    try {
+      loadingStore.startLoading()
+      await cardStore.fetchCards(cardStore.currentPage + 1)
+      // Pré-carrega imagens das novas cartas
+      preloadImages(cardStore.cards.slice(-12))
+    } catch (error) {
+      console.error('Failed to load more cards:', error)
+    } finally {
+      loadingStore.stopLoading()
+    }
+  }, 300)
+}
+
+// Cache de imagens
+const preloadImages = (cards: Card[]) => {
+  cards.forEach(card => {
+    if (card.imageUrl) {
+      const img = new Image()
+      img.src = card.imageUrl
+    }
+  })
 }
 
 const handleTradeClick = (card: Card | null) => {
@@ -470,20 +496,27 @@ watch(() => selectedCard.value, (newValue) => {
 })
 
 onMounted(async () => {
-  // Verifica se o token existe e recarrega os dados do usuário
   if (localStorage.getItem('token')) {
     try {
       loadingStore.startLoading()
       await authStore.fetchMe()
     } catch (error) {
       console.error('Failed to fetch user data:', error)
-      // Se falhar ao carregar dados do usuário, faz logout
       authStore.logout()
     } finally {
       loadingStore.stopLoading()
     }
   }
-  fetchCards()
+  await fetchCards()
+  // Pré-carrega imagens das primeiras cartas
+  preloadImages(cardStore.cards)
+})
+
+onUnmounted(() => {
+  if (loadMoreTimeout) {
+    clearTimeout(loadMoreTimeout)
+  }
+  stopObserver()
 })
 </script>
 
@@ -501,5 +534,38 @@ onMounted(async () => {
 
 .animate-fade-in {
   animation: fade-in 0.6s ease-out forwards;
+}
+
+/* Hide scrollbar but keep functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari and Opera */
+}
+
+/* Scrollbar customization */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thumb-indigo-600::-webkit-scrollbar-thumb {
+  background-color: theme('colors.indigo.600');
+  border-radius: theme('borderRadius.full');
+}
+
+.scrollbar-track-gray-800::-webkit-scrollbar-track {
+  background-color: theme('colors.gray.800');
+}
+
+/* Optimize animations */
+.group {
+  will-change: transform;
+}
+
+img {
+  backface-visibility: hidden;
 }
 </style> 

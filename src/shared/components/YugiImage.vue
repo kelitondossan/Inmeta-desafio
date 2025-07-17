@@ -19,8 +19,8 @@
 <style scoped>
 .yugi-container {
   position: fixed;
-  bottom: -20px;
-  right: 20px;
+  bottom: 100px;
+  right: 100px;
   width: 200px;
   height: 200px;
   z-index: 1;

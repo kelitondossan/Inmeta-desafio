@@ -196,7 +196,7 @@
   resolved "https://registry.npmjs.org/@tanstack/virtual-core/-/virtual-core-3.13.12.tgz"
   integrity sha512-1YBOJfRHV4sXUmWsFSf5rQor4Ss82G8dQWLRbnk3GA4jeP8hQt1hxXh0tmflpC0dz3VgEv/1+qwPyLeWkQuPFA==
 
-"@tanstack/vue-virtual@^3.0.0-beta.60":
+"@tanstack/vue-virtual@^3.0.0-beta.60", "@tanstack/vue-virtual@^3.13.12":
   version "3.13.12"
   resolved "https://registry.npmjs.org/@tanstack/vue-virtual/-/vue-virtual-3.13.12.tgz"
   integrity sha512-vhF7kEU9EXWXh+HdAwKJ2m3xaOnTTmgcdXcF2pim8g4GvI7eRrk2YRuV5nUlZnd/NbCIX4/Ja2OZu5EjJL06Ww==
@@ -490,7 +490,7 @@
   resolved "https://registry.npmjs.org/@vue/shared/-/shared-3.5.17.tgz"
   integrity sha512-CabR+UN630VnsJO/jHWYBC1YVXyMq94KKp6iF5MQgZJs5I8cmjw6oVMO1oDbtBkENSHSSn/UadWlW/OAgdmKrg==
 
-"@vueuse/core@^10.7.2":
+"@vueuse/core@^10.11.1":
   version "10.11.1"
   resolved "https://registry.npmjs.org/@vueuse/core/-/core-10.11.1.tgz"
   integrity sha512-guoy26JQktXPcz+0n3GukWIy/JDNKti9v6VEMu6kV2sYBsWuGiTU8OWdg+ADfUbHg3/3DlqySDe7JmdHrktiww==
