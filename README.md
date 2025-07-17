@@ -110,4 +110,4 @@ A aplicação é totalmente responsiva e se adapta a diferentes tamanhos de tela
 
 ## 📄 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes. 
+<
